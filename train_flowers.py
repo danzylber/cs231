@@ -15,13 +15,13 @@ dataset_dir = './Data'
 log_dir = './log'
 
 #State where your checkpoint file is
-checkpoint_file = './inception_resnet_v2_2016_08_30.ckpt'
+checkpoint_file = './Models/inception_resnet_v2_2016_08_30.ckpt'
 
 #State the image size you're resizing your images to. We will use the default inception size of 299.
 image_size = 299
 
 #State the number of classes to predict:
-num_classes = 5
+num_classes = 3
 
 #State the labels file and read it
 labels_file = 'Data/labels.txt'
@@ -49,7 +49,7 @@ items_to_descriptions = {
 num_epochs = 1
 
 #State your batch size
-batch_size = 10
+batch_size = 1
 
 #Learning rate information and configuration (Up to you to experiment)
 initial_learning_rate = 0.0002
@@ -183,7 +183,7 @@ def run():
 		images, _, labels = load_batch(dataset, batch_size=batch_size)
 
 		#Know the number steps to take before decaying the learning rate and batches per epoch
-		num_batches_per_epoch = dataset.num_samples / batch_size
+		num_batches_per_epoch = int(dataset.num_samples / batch_size)
 		num_steps_per_epoch = num_batches_per_epoch #Because one step is one batch processed
 		decay_steps = int(num_epochs_before_decay * num_steps_per_epoch)
 
@@ -225,7 +225,6 @@ def run():
 		accuracy, accuracy_update = tf.contrib.metrics.streaming_accuracy(predictions, labels)
 		metrics_op = tf.group(accuracy_update, probabilities)
 
-
 		#Now finally create all the summaries you need to monitor and group them into one summary op.
 		tf.summary.scalar('losses/Total_Loss', total_loss)
 		tf.summary.scalar('accuracy', accuracy)
@@ -257,8 +256,8 @@ def run():
 
 		#Run the managed session
 		with sv.managed_session() as sess:
-			for step in xrange(num_steps_per_epoch * num_epochs):
-			# for step in xrange(1):
+			for step in range(num_steps_per_epoch * num_epochs):
+			# for step in range(1):
 				#At the start of every epoch, show the vital information:
 				if step % num_batches_per_epoch == 0:
 					logging.info('Epoch %s/%s', step/num_batches_per_epoch + 1, num_epochs)
